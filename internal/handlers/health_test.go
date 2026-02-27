@@ -143,9 +143,9 @@ type errorWriter struct {
 	statusCode int
 }
 
-func (e *errorWriter) Header() http.Header         { return e.header }
-func (e *errorWriter) WriteHeader(code int)         { e.statusCode = code }
-func (e *errorWriter) Write([]byte) (int, error)    { return 0, fmt.Errorf("forced write error") }
+func (e *errorWriter) Header() http.Header       { return e.header }
+func (e *errorWriter) WriteHeader(code int)      { e.statusCode = code }
+func (e *errorWriter) Write([]byte) (int, error) { return 0, fmt.Errorf("forced write error") }
 
 func TestWriteJSON_EncodeError(t *testing.T) {
 	ew := &errorWriter{header: http.Header{}}
