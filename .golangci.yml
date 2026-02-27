@@ -1,0 +1,43 @@
+version: "2"
+
+formatters:
+  enable:
+    - gofmt           # standard formatting
+    - goimports       # import grouping and ordering
+
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/mstephenholl/gitops-demo
+
+linters:
+  enable:
+    # ---- Bug detection ----
+    - errcheck        # unchecked errors
+    - govet           # go vet passes
+    - staticcheck     # comprehensive static analysis
+    - ineffassign     # unused assignments
+    - unused          # unused code
+
+    # ---- Error handling ----
+    - errorlint       # correct Go 1.13+ error wrapping (errors.Is / errors.As)
+
+    # ---- Security ----
+    - gosec           # security-oriented checks
+
+    # ---- Style & quality ----
+    - gocritic        # common bug, performance, and style patterns
+    - misspell        # catches common English typos
+    - copyloopvar     # detects copied loop variables
+
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        - hugeParam      # not useful for this project size
+
+    gosec:
+      excludes:
+        - G115           # integer overflow — too noisy for port strings

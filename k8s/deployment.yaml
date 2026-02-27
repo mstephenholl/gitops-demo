@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-demo
+  namespace: gitops-demo
+  labels:
+    app: gitops-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gitops-demo
+  template:
+    metadata:
+      labels:
+        app: gitops-demo
+    spec:
+      containers:
+        - name: server
+          # For local k3d: use k3d image import to load this image.
+          # For CI/CD: replace with ghcr.io/OWNER/gitops-demo:TAG
+          image: gitops-demo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi

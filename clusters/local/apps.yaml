@@ -1,0 +1,22 @@
+---
+# This FluxCD Kustomization tells the kustomize-controller to reconcile
+# the manifests in the k8s/ directory from the GitRepository source.
+#
+# After running `flux bootstrap github`, copy this file into:
+#   clusters/local/apps.yaml
+# Then commit and push. Flux will pick it up automatically.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: gitops-demo
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./k8s
+  prune: true
+  targetNamespace: gitops-demo
+  wait: true
+  timeout: 2m

@@ -1,0 +1,9 @@
+.env
+.git
+.github
+bin/
+coverage.out
+clusters/
+k8s/
+scripts/
+*.md
