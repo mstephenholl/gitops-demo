@@ -24,6 +24,7 @@ fi
 CLUSTER_NAME="${CLUSTER_NAME:-gitops-demo}"
 REPO_NAME="${REPO_NAME:-gitops-demo}"
 BRANCH="${BRANCH:-main}"
+K3S_IMAGE="${K3S_IMAGE:-rancher/k3s:v1.33.0-k3s1}"
 IMAGE_NAME="gitops-demo"
 IMAGE_TAG="latest"
 
@@ -53,6 +54,7 @@ fi
 
 log "Creating k3d cluster '$CLUSTER_NAME' with port mapping 8080->80..."
 k3d cluster create "$CLUSTER_NAME" \
+  --image "$K3S_IMAGE" \
   --port "8080:80@loadbalancer" \
   --agents 2 \
   --wait
