@@ -172,6 +172,17 @@ func TestRun_GracefulShutdown(t *testing.T) {
 	}
 }
 
+func TestStart_InvalidPort(t *testing.T) {
+	// Use an out-of-range port so ListenAndServe fails immediately,
+	// causing start() to return an error without blocking.
+	t.Setenv("PORT", "99999")
+
+	err := start()
+	if err == nil {
+		t.Error("expected error for invalid port")
+	}
+}
+
 func TestRun_InvalidPort(t *testing.T) {
 	logger := testLogger()
 	// Bind to a known-used port to force an error.

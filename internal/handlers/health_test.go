@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -132,5 +133,30 @@ func TestInfo_ContentType(t *testing.T) {
 	ct := rec.Header().Get("Content-Type")
 	if ct != "application/json" {
 		t.Errorf("expected Content-Type %q, got %q", "application/json", ct)
+	}
+}
+
+// errorWriter is an http.ResponseWriter whose Write method always fails,
+// forcing json.Encoder.Encode to return an error inside writeJSON.
+type errorWriter struct {
+	header     http.Header
+	statusCode int
+}
+
+func (e *errorWriter) Header() http.Header         { return e.header }
+func (e *errorWriter) WriteHeader(code int)         { e.statusCode = code }
+func (e *errorWriter) Write([]byte) (int, error)    { return 0, fmt.Errorf("forced write error") }
+
+func TestWriteJSON_EncodeError(t *testing.T) {
+	ew := &errorWriter{header: http.Header{}}
+
+	// A broken writer forces json.Encoder.Encode to fail, exercising the
+	// error branch inside writeJSON. After the error, http.Error overwrites
+	// Content-Type to "text/plain; charset=utf-8".
+	writeJSON(ew, http.StatusOK, map[string]string{"key": "value"})
+
+	ct := ew.header.Get("Content-Type")
+	if ct != "text/plain; charset=utf-8" {
+		t.Errorf("expected Content-Type %q after error, got %q", "text/plain; charset=utf-8", ct)
 	}
 }
